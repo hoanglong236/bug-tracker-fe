@@ -9,7 +9,7 @@ export class TimestampFormatterService {
   ];
   private readonly defaultTimestampProps = ['createdAt', 'updatedAt'];
 
-  isAcceptableTimestamp(timestampStr: string): boolean {
+  private isAcceptableTimestamp(timestampStr: string): boolean {
     return (
       !!timestampStr &&
       this.timestampFormatRegexList.some((regex) => regex.test(timestampStr))
@@ -27,7 +27,7 @@ export class TimestampFormatterService {
     const newObj = { ...obj };
 
     timestampProps.forEach((prop) => {
-      if (this.isAcceptableTimestamp(newObj[prop])) {
+      if (newObj[prop]) {
         newObj[prop] = this.formatTimestampStr(newObj[prop]);
       }
     });
@@ -36,16 +36,12 @@ export class TimestampFormatterService {
   }
 
   formatTimestampStr(timestampStr: string): string {
-    if (!timestampStr) {
-      return timestampStr;
-    }
-
-    const date = new Date(timestampStr);
-    if (isNaN(date.getTime())) {
+    if (!this.isAcceptableTimestamp(timestampStr)) {
       return timestampStr;
     }
 
     const padTwoDigit = (value: number) => value.toString().padStart(2, '0');
+    const date = new Date(timestampStr);
 
     const year = date.getFullYear();
     const month = padTwoDigit(date.getMonth() + 1);

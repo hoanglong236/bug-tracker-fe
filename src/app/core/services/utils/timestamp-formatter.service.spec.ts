@@ -13,28 +13,6 @@ describe('TimestampFormatterService', () => {
     expect(service).toBeTruthy();
   });
 
-  describe('isAcceptableTimestamp', () => {
-    it('should return true for a valid timestamp', () => {
-      const validTimestamp = '2023-03-15 12:34:56.789';
-      expect(service.isAcceptableTimestamp(validTimestamp)).toBeTrue();
-    });
-
-    it('should return false for an invalid timestamp', () => {
-      const invalidTimestamp = 'invalid-timestamp';
-      expect(service.isAcceptableTimestamp(invalidTimestamp)).toBeFalse();
-    });
-
-    it('should return false for an empty timestamp', () => {
-      const emptyTimestamp = '';
-      expect(service.isAcceptableTimestamp(emptyTimestamp)).toBeFalse();
-    });
-
-    it('should return false for null or undefined timestamp strings', () => {
-      expect(service.isAcceptableTimestamp(null as any)).toBeFalse();
-      expect(service.isAcceptableTimestamp(undefined as any)).toBeFalse();
-    });
-  });
-
   describe('formatTimestampStr', () => {
     it('should format a valid timestamp string', () => {
       const timestampStr = '2023-03-15 12:34:56.789';
@@ -45,7 +23,7 @@ describe('TimestampFormatterService', () => {
       expect(result).toEqual(expectedFormattedStr);
     });
 
-    it('should handle an invalid timestamp string gracefully', () => {
+    it('should not format an invalid timestamp string', () => {
       const invalidTimestampStr = 'invalid-timestamp';
 
       const result = service.formatTimestampStr(invalidTimestampStr);
@@ -54,11 +32,7 @@ describe('TimestampFormatterService', () => {
     });
 
     it('should handle an empty timestamp string gracefully', () => {
-      const emptyTimestampStr = '';
-
-      const result = service.formatTimestampStr(emptyTimestampStr);
-
-      expect(result).toBe(emptyTimestampStr);
+      expect(service.formatTimestampStr('')).toBe('');
     });
 
     it('should handle null or undefined timestamp strings gracefully', () => {
@@ -98,7 +72,7 @@ describe('TimestampFormatterService', () => {
       expect(service.formatTimestampProps(inputObject)).toEqual(expectedOutput);
     });
 
-    it('should handle null or undefined properties without throwing errors', () => {
+    it('should handle null or undefined timestamp properties gracefully', () => {
       const inputObject = {
         createdAt: null,
         updatedAt: undefined,
@@ -108,29 +82,28 @@ describe('TimestampFormatterService', () => {
       expect(service.formatTimestampProps(inputObject)).toEqual(inputObject);
     });
 
-    it('should handle an empty object without throwing errors', () => {
-      const inputObject = {};
-      expect(service.formatTimestampProps(inputObject)).toEqual(inputObject);
+    it('should handle an empty object gracefully', () => {
+      expect(service.formatTimestampProps({})).toEqual({});
     });
 
-    it('should handle null or undefined without throwing errors', () => {
-      expect(service.formatTimestampProps(null)).toBeNull;
+    it('should handle null or undefined objects gracefully', () => {
+      expect(service.formatTimestampProps(null)).toBeNull();
       expect(service.formatTimestampProps(undefined)).toBeUndefined();
     });
 
     it('should format timestamps in specified properties with custom property list', () => {
       const inputObject = {
         createdAt: '2023-03-15 12:34:56.789',
-        updatedAt: '2023-03-16 01:23:45.678',
+        deletedAt: '2023-03-16 01:23:45.678',
         otherProp: 'other-value',
       };
       const expectedOutput = {
-        createdAt: '2023/03/15 12:34:56',
-        updatedAt: '2023-03-16 01:23:45.678',
+        createdAt: '2023-03-15 12:34:56.789',
+        deletedAt: '2023/03/16 01:23:45',
         otherProp: 'other-value',
       };
 
-      expect(service.formatTimestampProps(inputObject, ['createdAt'])).toEqual(
+      expect(service.formatTimestampProps(inputObject, ['deletedAt'])).toEqual(
         expectedOutput
       );
     });

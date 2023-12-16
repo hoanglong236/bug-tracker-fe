@@ -4,10 +4,17 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class SessionStorageService {
-  saveItem(key: string, value: any) {
+  private isNullOrUndefined(value: any): boolean {
+    return value === null || value === undefined;
+  }
+
+  setItem(key: string, value: any) {
+    if (this.isNullOrUndefined(key) || this.isNullOrUndefined(value)) {
+      return;
+    }
+
     try {
-      const serializedValue = JSON.stringify(value);
-      sessionStorage.setItem(key, serializedValue);
+      sessionStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
       console.error(`Error saving item to session storage: ${error}`);
     }
